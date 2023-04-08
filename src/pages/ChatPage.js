@@ -5,6 +5,7 @@ import { allUsersRoute, host, recieveMessageRoute, sendMessageRoute } from "../u
 import { io } from "socket.io-client";
 import startLogo from "../assets/robot.gif"
 import Loader from "../components/Loader";
+import {format} from "timeago.js";
 
 export const ChatPage = () => {
   const [text, setText] = useState("");
@@ -19,6 +20,8 @@ export const ChatPage = () => {
   const scrollRef = useRef();
   const [currentUser, setCurrentUser] = useState(undefined);
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [activeUser, setActiveUser] = useState("");
+  const [onlineUserArray, setOnlineUserArray] = useState([]);
 
   const reloadFunc = async ({stopLoading}) => {
     if(stopLoading === false){
@@ -73,13 +76,45 @@ export const ChatPage = () => {
     }
   };
 
+  
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser._id);
+      // socket.current.on("get-online-users", (getUsersArray) => {
+      //   setOnlineUserArray(getUsersArray)
+      // });
+    }
+  }, [currentUser]);
+
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.on("get-online-users", (getUsersArray) => {
+        setOnlineUserArray(getUsersArray)
+      });
+    }
+  }, [currentUser])
+
+  useEffect(() => {
+   if(user){
+    const findActiveUser = onlineUserArray.find((x) => {
+      return x.userId === user._id
+    })
+    if(findActiveUser){
+      setActiveUser(findActiveUser.userId)
+    }
+     
+   }
+  }, [onlineUserArray])
+
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
         reloadFunc({stopLoading: true})
       });
     }
-
   });
 
   useEffect(() => {
@@ -99,13 +134,6 @@ export const ChatPage = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host);
-      socket.current.emit("add-user", currentUser._id);
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
     if (!localStorage.getItem("user-login-details")) {
       navigate("/login");
     } else {
@@ -116,10 +144,11 @@ export const ChatPage = () => {
       );
     }
   }, []);
+  
 
   return (
     <div style={{ height: "100vh", backgroundColor: "#f8f8f8" }}>
-      <div className="navbar navbar-light bg-light">
+      <div className="navbar navbar-light bg-light" style={{position: "sticky", left: "0", top: "0"}}>
         <div
           className="container-fluid"
           style={{ display: "flex", justifyContent: "space-between" }}
@@ -158,8 +187,9 @@ export const ChatPage = () => {
                 />
               )}
             </div>
-            <div style={{ margin: "15px" }}>
+            <div style={{ margin: "5px 0 0 15px" }}>
               <p className="fw-bold mb-1" style={{ textDecoration: "capitalise" }}>{user.fullName}</p>
+              <p className="fw-bold mb-1" style={{marginTop: "-10px"}}>{activeUser === user._id?<span style={{color: "green"}}>Online</span>:"Offline"}</p>
             </div>
           </div>
           <div style={{ color: "grey" }}>
@@ -253,7 +283,7 @@ export const ChatPage = () => {
                     <span>{elem.fromSelf ? "You" : user.fullName}</span>
                     <b style={{ fontSize: "20px" }}>{elem.message}</b>
                   </div>
-                  <p>{elem.fromSelf === false ? <i className="far fa-clock"></i> : elem.time + " / " + elem.date} {elem.fromSelf ? <i className="far fa-clock"></i> : elem.time + " / " + elem.date}</p>
+                  <p>{format(elem.time)}</p>
 
                 </div>
               ))

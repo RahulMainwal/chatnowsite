@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Header } from '../components/Header';
 import axios from 'axios';
-import { allUsersRoute } from '../utils/ApiRoutes'
+import { allUsersRoute, host } from '../utils/ApiRoutes'
 import { NavLink, useNavigate } from 'react-router-dom';
 import Loader from '../components/Loader';
+import { io } from "socket.io-client";
 
 function HomePage() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [users, setUsers] = useState([]);
   const [contactUsers, setContactUsers] = useState([]);
   const [foundContactUsers, setFoundContactUsers] = useState([]);
   const currentUser = JSON.parse(window.localStorage.getItem("user-login-details"))
   const navigate = useNavigate()
+  const socket = useRef();
 
   const onSeachBtnHandler = async (e) => {
     e.preventDefault();
@@ -50,7 +53,7 @@ function HomePage() {
   }
 
   useEffect(() => {
-    if(currentUser===null){
+    if (currentUser === null) {
       navigate("/login")
     }
   }, [])
@@ -71,13 +74,27 @@ function HomePage() {
   }, [foundContactUsers])
 
   useEffect(() => {
-    if(currentUser !== null){
+    if (currentUser !== null) {
       const findOwnSelf = users.find(x => {
         return x._id === currentUser._id
       })
       setFoundContactUsers(findOwnSelf)
     }
   })
+
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser._id);
+      socket.current.on("get-online-users", (getUsersArray) => {
+        if (getUsersArray.length !== 0) {
+          setOnlineUsers(getUsersArray)
+        }
+      });
+
+    }
+  }, []);
 
 
   return (
@@ -150,7 +167,7 @@ function HomePage() {
                             <div style={{ display: "flex" }}>
                               <div>
                                 {elem.avatarImage === "" ? (
-                                  <div style={{ padding: "2px 10px", borderRadius: "50%", fontSize: "18px", backgroundColor: "#4169e1", color: "white" }}>{elem.fullName.slice("", 1).toUpperCase()}</div>
+                                  <div style={{ padding: "8px 18px", marginTop: "5px", borderRadius: "50%", fontSize: "18px", backgroundColor: "#4169e1", color: "white" }}>{elem.fullName.slice("", 1).toUpperCase()}</div>
                                 ) : (
                                   <img
                                     src={elem.avatarImage}
@@ -165,8 +182,12 @@ function HomePage() {
                                 )}
                               </div>
                               <div style={{ marginLeft: "20px" }}>
-                                <p className="fw-bold mb-1">{elem.fullName}</p>
-                                <p className="text-muted mb-0">Message</p>
+                                <p className="fw-bold mb-1" style={{ marginTop: "5px", }}>{elem.fullName}</p>
+                                {
+                                  onlineUsers.find((x) => {
+                                    return elem._id === x.userId
+                                  })=== undefined?  <p className="text-muted mb-0" style={{marginTop: "-7px"}}>Offline</p>: <p className="fw-bold mb-1" style={{color: "green", marginTop: "-7px"}}>Online</p>
+                                }
                               </div>
                             </div>
                             {/* <div style={{ marginRight: "5px", color: "grey" }}>time</div> */}
@@ -190,7 +211,7 @@ function HomePage() {
                     <input
                       type="search"
                       className="form-control rounded"
-                      placeholder="Search by name/email/phone"
+                      placeholder="Search by name"
                       aria-label="Search"
                       aria-describedby="search-addon"
                       onChange={(e) => setSearch(e.target.value)}
@@ -239,10 +260,10 @@ function HomePage() {
                               <div style={{ display: "flex" }}>
                                 <div>
                                   {x.avatarImage === "" ? (
-                                    <div style={{ padding: "2px 10px", borderRadius: "50%", fontSize: "18px", backgroundColor: "#4169e1", color: "white" }}>{x.fullName.slice("", 1).toUpperCase()}</div>
+                                    <div style={{ padding: "8px 18px", marginTop: "5px", borderRadius: "50%", fontSize: "18px", backgroundColor: "#4169e1", color: "white" }}>{x.fullName.slice("", 1).toUpperCase()}</div>
                                   ) : (
                                     <img
-                                      src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                                    src={x.avatarImage}
                                       alt=""
                                       style={{
                                         width: "45px",
@@ -253,11 +274,11 @@ function HomePage() {
                                     />
                                   )}
                                 </div>
-                                <div style={{ marginLeft: "20px", marginTop: "3px" }}>
+                                <div style={{ marginLeft: "20px", marginTop: "15px" }}>
                                   <p className="fw-bold mb-1">{x.fullName}</p>
                                 </div>
                               </div>
-                              <NavLink style={{ marginTop: "2px" }} to={`/${x._id}`}>
+                              <NavLink style={{ marginTop: "15px" }} to={`/${x._id}`}>
                                 Start Chat
                               </NavLink>
                             </div>
