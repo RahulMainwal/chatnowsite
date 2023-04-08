@@ -191,7 +191,7 @@ export const ChatPage = () => {
             </div>
             <div style={{ margin: "5px 0 0 15px" }}>
               <p className="fw-bold mb-1" style={{ textDecoration: "capitalise" }}>{user.fullName}</p>
-              <p className="fw-bold mb-1" style={{ marginTop: "-10px" }}>{activeUser === user._id ? <span style={{ color: "green" }}>Online</span> : "Offline"}</p>
+              <p className="fw-bold mb-1" style={{ marginTop: "-10px" }}>{activeUser === user._id ? <span style={{ color: "green" }}>Online</span> : <span className="text-muted mb-0">Offline</span>}</p>
             </div>
           </div>
           <div style={{ color: "grey" }}>
