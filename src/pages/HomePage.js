@@ -94,7 +94,7 @@ function HomePage() {
       });
 
     }
-  }, []);
+  }, [socket.current]);
 
 
   return (
