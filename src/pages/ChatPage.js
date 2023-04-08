@@ -5,7 +5,7 @@ import { allUsersRoute, host, recieveMessageRoute, sendMessageRoute } from "../u
 import { io } from "socket.io-client";
 import startLogo from "../assets/robot.gif"
 import Loader from "../components/Loader";
-import {format} from "timeago.js";
+import { format } from "timeago.js";
 
 export const ChatPage = () => {
   const [text, setText] = useState("");
@@ -23,9 +23,9 @@ export const ChatPage = () => {
   const [activeUser, setActiveUser] = useState("");
   const [onlineUserArray, setOnlineUserArray] = useState([]);
 
-  const reloadFunc = async ({stopLoading}) => {
-    if(stopLoading === false){
-    setbannerLoading(true)
+  const reloadFunc = async ({ stopLoading }) => {
+    if (stopLoading === false) {
+      setbannerLoading(true)
     }
     const { data } = await axios.get(allUsersRoute);
     const filter = data.find((elem) => {
@@ -47,6 +47,15 @@ export const ChatPage = () => {
     });
     setMessages(response.data);
   };
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.on("get-online-users", (getUsersArray) => {
+        setOnlineUserArray(getUsersArray)
+      });
+    }
+  }, [currentUser])
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -72,11 +81,11 @@ export const ChatPage = () => {
       msgs.push({ fromSelf: true, message: text });
       setMessages(msgs);
       setText("")
-      reloadFunc({stopLoading: true})
+      reloadFunc({ stopLoading: true })
     }
   };
 
-  
+
   useEffect(() => {
     if (currentUser) {
       socket.current = io(host);
@@ -89,30 +98,23 @@ export const ChatPage = () => {
 
 
   useEffect(() => {
-    if (currentUser) {
-      socket.current = io(host);
-      socket.current.on("get-online-users", (getUsersArray) => {
-        setOnlineUserArray(getUsersArray)
-      });
-    }
-  }, [currentUser])
+    if (user) {
+      const findActiveUser = onlineUserArray.find((x) => {
+        return x.userId === user._id
+      })
+      if (findActiveUser) {
+        setActiveUser(findActiveUser.userId)
+      } else {
+        setActiveUser("")
+      }
 
-  useEffect(() => {
-   if(user){
-    const findActiveUser = onlineUserArray.find((x) => {
-      return x.userId === user._id
-    })
-    if(findActiveUser){
-      setActiveUser(findActiveUser.userId)
     }
-     
-   }
   }, [onlineUserArray])
 
   useEffect(() => {
     if (socket.current) {
       socket.current.on("msg-recieve", (msg) => {
-        reloadFunc({stopLoading: true})
+        reloadFunc({ stopLoading: true })
       });
     }
   });
@@ -130,7 +132,7 @@ export const ChatPage = () => {
       navigate("/login")
     }
 
-    reloadFunc({stopLoading: false});
+    reloadFunc({ stopLoading: false });
   }, []);
 
   useEffect(() => {
@@ -144,11 +146,11 @@ export const ChatPage = () => {
       );
     }
   }, []);
-  
+
 
   return (
     <div style={{ height: "100vh", backgroundColor: "#f8f8f8" }}>
-      <div className="navbar navbar-light bg-light" style={{position: "sticky", left: "0", top: "0"}}>
+      <div className="navbar navbar-light bg-light" style={{ position: "sticky", left: "0", top: "0" }}>
         <div
           className="container-fluid"
           style={{ display: "flex", justifyContent: "space-between" }}
@@ -189,7 +191,7 @@ export const ChatPage = () => {
             </div>
             <div style={{ margin: "5px 0 0 15px" }}>
               <p className="fw-bold mb-1" style={{ textDecoration: "capitalise" }}>{user.fullName}</p>
-              <p className="fw-bold mb-1" style={{marginTop: "-10px"}}>{activeUser === user._id?<span style={{color: "green"}}>Online</span>:"Offline"}</p>
+              <p className="fw-bold mb-1" style={{ marginTop: "-10px" }}>{activeUser === user._id ? <span style={{ color: "green" }}>Online</span> : "Offline"}</p>
             </div>
           </div>
           <div style={{ color: "grey" }}>
