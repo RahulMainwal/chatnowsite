@@ -252,7 +252,7 @@ export const ChatPage = () => {
               </div>
               :
               messages.map((elem, ind) => (
-                <div key={ind} ref={scrollRef} style={elem.fromSelf ? {
+                <div key={ind} style={elem.fromSelf ? {
                   width: "100%", display: "flex",
                   flexDirection: "column", textAlign: "end", alignItems: "end"
                 } : {
