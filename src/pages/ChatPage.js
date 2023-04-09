@@ -231,7 +231,7 @@ export const ChatPage = () => {
         display: "flex",
         flexDirection: "column",
         overflow: "auto",
-        height: "75vh",
+        height: "70vh",
         maxWidth: "700px",
         // display: "block",
         margin: "auto",
