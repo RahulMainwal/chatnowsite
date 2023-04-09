@@ -27,7 +27,7 @@ export const Header = () => {
     }, [])
 
     return (
-        JSON.parse(userFromLs) && <nav className="navbar navbar-light bg-light" style={{position: "sticky", left: "0", top: "0", zIndex; "1"}}>
+        JSON.parse(userFromLs) && <nav className="navbar navbar-light bg-light" style={{position: "sticky", left: "0", top: "0", zIndex: "1"}}>
         <div className="container-fluid">
             <NavLink
                 className="navbar-brand"
