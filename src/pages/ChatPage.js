@@ -168,18 +168,7 @@ export const ChatPage = () => {
             </div>
             <div>
               {user.avatarImage === "" ? (
-                <div
-                  style={{
-                    backgroundColor: "#4169e1 ",
-                    padding: "5px 14px",
-                    fontSize: "20px",
-                    borderRadius: "50%",
-                    color: "white",
-                    marginTop: "10px"
-                  }}
-                >
-                  {user.fullName.slice("", 1).toUpperCase()}
-                </div>
+                <div style={{ padding: "8px 18px", marginTop: "5px", borderRadius: "50%", fontSize: "18px", backgroundColor: "#4169e1", color: "white" }}>{user.fullName.slice("", 1).toUpperCase()}</div>
               ) : (
                 <img
                   src={user.avatarImage}
