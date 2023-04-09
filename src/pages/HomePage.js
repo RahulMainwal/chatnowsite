@@ -182,7 +182,7 @@ function HomePage() {
                                 )}
                               </div>
                               <div style={{ marginLeft: "20px" }}>
-                                <p className="fw-bold mb-1" style={{ marginTop: "5px", }}>{elem.fullName}</p>
+                                <p className="fw-bold mb-1" style={{ marginTop: "5px", textTransform: " capitalize"}}>{elem.fullName}</p>
                                 {
                                   onlineUsers.find((x) => {
                                     return elem._id === x.userId
@@ -275,7 +275,7 @@ function HomePage() {
                                   )}
                                 </div>
                                 <div style={{ marginLeft: "20px", marginTop: "15px" }}>
-                                  <p className="fw-bold mb-1">{x.fullName}</p>
+                                  <p className="fw-bold mb-1" style={{textTransform: " capitalize"}}>{x.fullName}</p>
                                 </div>
                               </div>
                               <NavLink style={{ marginTop: "15px" }} to={`/${x._id}`}>
