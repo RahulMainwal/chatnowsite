@@ -224,7 +224,7 @@ export const ChatPage = () => {
           </div>
         </div>
       </div>
-      <div style={{ textAlign: "center", marginTop: "5px", position: "fixed", left: " 0", right: "0", margin: "auto"}}><i className="fas fa-lock"></i> Messages</div>
+      <div style={{ textAlign: "center", top: "5px", position: "sticky", left: " 0", right: "0", margin: "auto"}}><i className="fas fa-lock"></i> Messages</div>
       <div id="chat-container" style={{
         padding: "1rem 1.5rem",
         gap: "1rem",
@@ -252,7 +252,7 @@ export const ChatPage = () => {
               </div>
               :
               messages.map((elem, ind) => (
-                <div key={ind} style={elem.fromSelf ? {
+                <div key={ind} ref={scrollRef} style={elem.fromSelf ? {
                   width: "100%", display: "flex",
                   flexDirection: "column", textAlign: "end", alignItems: "end"
                 } : {
