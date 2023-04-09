@@ -168,8 +168,8 @@ function Login() {
     <div>
       <div style={{ width: "90%", margin: "auto", marginTop: "2vh" }}>
         <div style={{ textAlign: "center", marginBottom: "5vh" }}>
-          <b style={{ color: "#0084c7", fontSize: "25px" }}>Welcome</b>{" "}
-          <span style={{ fontSize: "20px" }}>to the Login Page!</span>
+          <b style={{ color: "#0084c7", fontSize: "25px" }}>Welcome!</b>{" "}
+          <span style={{ fontSize: "20px" }}>to Chatnow</span>
         </div>
         <div
           style={{
